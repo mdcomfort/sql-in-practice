@@ -31,7 +31,9 @@ module.exports = {
     approveAppointment: (req, res) => {
         let {apptId} = req.body
     
-        sequelize.query(`*****YOUR CODE HERE*****
+        sequelize
+        .query(`UPDATE cc_appointments SET approved = True
+        WHERE appt_id = ${apptId}
         
         insert into cc_emp_appts (emp_id, appt_id)
         values (${nextEmp}, ${apptId}),
@@ -66,8 +68,17 @@ module.exports = {
             JOIN cc_employees e ON e.emp_id = ea.emp_id
             JOIN cc_users u ON e.user_id = u.user_id
             WHERE a.approved = True AND a.completed = True
-            ORDER BY a.date ASC;`) 
+            ORDER BY a.date DESC;`) 
         .then((dbRes) => res.status(200).send(dbRes[0]))
         .catch((err) => console.log(err))
     },
+    completeAppointment: (req, res) => {
+        let {apptId} = req.body
+
+        sequelize
+        .query(`UPDATE cc_appointments SET completed = True
+        WHERE appt_Id = ${apptId};`)
+        .then((dbRes) => res.status(200).send(dbRes[0]))
+        .catch((err) => console.log(err))
+    }
 }
