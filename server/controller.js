@@ -45,16 +45,14 @@ module.exports = {
     },
     getAllClients: (req, res) => {
         sequelize
-        .query (
-            `SELECT * FROM cc_users u
+        .query(`SELECT * FROM cc_users u
             JOIN cc_clients c ON c.user_id = u.user_id;`)
         .then((dbRes) => res.status(200).send(dbRes[0]))
         .catch((err) => console.log(err))
     },
     getPendingAppointments: (req, res) => {
         sequelize
-        .query (
-            `SELECT * FROM cc_appointments
+        .query(`SELECT * FROM cc_appointments
             WHERE approved = False
             ORDER BY date ASC;`)
         .then((dbRes) => res.status(200).send(dbRes[0]))
@@ -62,10 +60,13 @@ module.exports = {
     },
     getPastAppointments: (req, res) => {
         sequelize
-        .query (
-            `SELECT 
-            WHERE approved = True AND completed = True
-            ORDER BY date ASC;`)
+        .query(`SELECT a.appt_id, a.date, a.service_type, a.notes, a.approved, a.completed, u.first_name, u.last_name
+            FROM cc_appointments a
+            JOIN cc_emp_appts ea ON a.appt_id = ea.appt_id
+            JOIN cc_employees e ON e.emp_id = ea.emp_id
+            JOIN cc_users u ON e.user_id = u.user_id
+            WHERE a.approved = True AND a.completed = True
+            ORDER BY a.date ASC;`) 
         .then((dbRes) => res.status(200).send(dbRes[0]))
         .catch((err) => console.log(err))
     },
